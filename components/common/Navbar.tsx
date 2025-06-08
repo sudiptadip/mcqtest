@@ -21,9 +21,9 @@ export default function Navbar() {
   return (
     <header className="w-full border-b bg-white shadow-sm">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-10">
-        <div className="flex items-center space-x-2">
+        <Link href={"/"} className="flex items-center space-x-2">
           <div className="text-2xl font-bold text-blue-600">✔ Exams</div>
-        </div>
+        </Link>
 
         {/* Desktop Navigation */}
         <ul className="hidden items-center space-x-8 text-sm font-medium text-gray-700 md:flex">
@@ -35,9 +35,11 @@ export default function Navbar() {
             </li>
           ))}
           <li>
-            <Button className="rounded-full bg-blue-600 text-white hover:bg-blue-700">
-              Log in
-            </Button>
+            <Link href={"/login"}>
+              <Button className="rounded-full bg-blue-600 text-white hover:bg-blue-700">
+                Log in
+              </Button>
+            </Link>
           </li>
         </ul>
 
