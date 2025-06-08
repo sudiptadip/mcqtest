@@ -36,7 +36,7 @@ export default function Navbar() {
           ))}
           <li>
             <Link href={"/login"}>
-              <Button className="rounded-full bg-blue-600 text-white hover:bg-blue-700">
+              <Button className="rounded-full bg-blue-600 text-white hover:bg-blue-700 cursor-pointer">
                 Log in
               </Button>
             </Link>
