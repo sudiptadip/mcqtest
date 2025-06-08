@@ -5,8 +5,6 @@ import PopularPracticeSets from "@/components/home/PopularPracticeSets";
 import PricingPlans from "@/components/home/PricingPlans";
 import SuccessStories from "@/components/home/SuccessStories";
 import WhyChooseUs from "@/components/home/WhyChooseUs";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
 
 export default function Home() {
   return (

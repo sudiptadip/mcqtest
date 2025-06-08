@@ -3,12 +3,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
-import { Poppins } from 'next/font/google'
 
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400', '600', '700'],
-})
 
 const inter = Inter({ subsets: ["latin"] });
 
