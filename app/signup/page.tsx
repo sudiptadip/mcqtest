@@ -12,6 +12,9 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { registerUser } from "@/lib/api/auth";
+import ToastNotify from "@/components/commonJs/ToastNotify";
+import { ToastType } from "@/lib/SD";
+import router from "next/router";
 
 interface FormData {
   firstName: string;
@@ -67,8 +70,16 @@ export default function SignUpPage() {
       phoneNumber: data.phone,
     });
 
-    console.log("Form submitted", response);
-    // TODO: call your API here
+    if (response.isSuccess) {
+      ToastNotify("Successfully register user", ToastType.success);
+      await fetch("/api/auth/set-token", {
+        method: "POST",
+        body: JSON.stringify({ token: response.result.token }),
+      });
+      router.push("/dashboard");
+    } else {
+      ToastNotify(response.errorMessage.join(", "), ToastType.error);
+    }
   };
 
   const handleGoogleSignIn = async () => {
