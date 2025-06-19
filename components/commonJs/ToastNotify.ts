@@ -3,7 +3,7 @@ import { toast, Bounce } from "react-toastify";
 
 export default function ToastNotify(
   message: string,
-  toastType: ToastType = ToastType.success
+  toastType: "success" | "info" | "warn" | "error" | "default" = ToastType.success
 ) {
   const options = {
     position: "top-right" as const,

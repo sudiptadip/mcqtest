@@ -9,22 +9,53 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import IconGoogle from "@/public/icons/IconGoogle";
 
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import ToastNotify from "@/components/commonJs/ToastNotify";
+import { loginUser } from "@/lib/api/auth";
+import Link from "next/link";
+
+interface LoginFormData {
+  email: string;
+  password: string;
+}
+
+const schema = yup.object().shape({
+  email: yup.string().email("Invalid email").required("Email is required"),
+  password: yup.string().required("Password is required"),
+});
+
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({ email: "", password: "" });
   const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: yupResolver(schema),
+  });
 
   const togglePassword = () => setShowPassword(!showPassword);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const onSubmit = async (data: LoginFormData) => {
+    const response = await loginUser({
+      email: data.email,
+      password: data.password,
+    });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // Normally you'd call your auth API here or use `signIn` from next-auth with credentials
-    console.log("Login form data:", formData);
-    router.push("/"); // On success
+    if (response?.isSuccess) {
+      await fetch("/api/auth/set-token", {
+        method: "POST",
+        body: JSON.stringify({ token: response.result.token }),
+      });
+      ToastNotify("Logged in successfully", "success");
+      router.push("/");
+    } else {
+      ToastNotify(response?.errorMessage.join(",") || "Login failed", "error");
+    }
   };
 
   const handleGoogleSignIn = async () => {
@@ -34,7 +65,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
       <div className="max-w-4xl w-full bg-white shadow-2xl rounded-3xl grid grid-cols-1 md:grid-cols-2 overflow-hidden">
-        {/* Left Side with Welcome */}
+        {/* Left Side */}
         <div className="bg-gradient-to-br from-indigo-600 to-violet-600 text-white p-10 hidden md:flex flex-col justify-center">
           <h2 className="text-3xl font-bold mb-4">Welcome Back</h2>
           <p className="text-sm text-gray-100">
@@ -48,7 +79,7 @@ export default function LoginPage() {
         </div>
 
         {/* Right Side - Form */}
-        <form onSubmit={handleSubmit} className="p-10 space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-10 space-y-6">
           <h2 className="text-2xl font-bold text-gray-800">
             Sign in to your account
           </h2>
@@ -72,34 +103,43 @@ export default function LoginPage() {
           <div>
             <Label htmlFor="email">Email Address</Label>
             <Input
-              className="mt-2"
-              name="email"
+              id="email"
               type="email"
+              {...register("email")}
+              className="mt-2"
+              aria-invalid={errors.email ? "true" : "false"}
               placeholder="you@example.com"
-              value={formData.email}
-              onChange={handleChange}
-              required
             />
+            {errors.email && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           <div className="relative">
             <Label htmlFor="password">Password</Label>
             <Input
-              className="mt-2"
-              name="password"
+              id="password"
               type={showPassword ? "text" : "password"}
+              {...register("password")}
+              className="mt-2"
               placeholder="Enter your password"
-              value={formData.password}
-              onChange={handleChange}
-              required
+              aria-invalid={errors.password ? "true" : "false"}
             />
             <button
               type="button"
               onClick={togglePassword}
               className="absolute right-3 top-9 text-gray-500 hover:text-gray-800"
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
+            {errors.password && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           <Button type="submit" className="w-full text-base font-semibold">
@@ -108,12 +148,12 @@ export default function LoginPage() {
 
           <p className="text-center text-sm text-gray-500 mt-3">
             Don’t have an account?{" "}
-            <a
+            <Link
               href="/signup"
               className="text-indigo-600 font-medium hover:underline"
             >
               Create one now
-            </a>
+            </Link>
           </p>
         </form>
       </div>

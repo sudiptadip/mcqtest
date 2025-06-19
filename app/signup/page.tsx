@@ -13,8 +13,8 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { registerUser } from "@/lib/api/auth";
 import ToastNotify from "@/components/commonJs/ToastNotify";
-import { ToastType } from "@/lib/SD";
 import router from "next/router";
+import Link from "next/link";
 
 interface FormData {
   firstName: string;
@@ -71,14 +71,14 @@ export default function SignUpPage() {
     });
 
     if (response.isSuccess) {
-      ToastNotify("Successfully register user", ToastType.success);
+      ToastNotify("Successfully register user", "success");
       await fetch("/api/auth/set-token", {
         method: "POST",
         body: JSON.stringify({ token: response.result.token }),
       });
       router.push("/dashboard");
     } else {
-      ToastNotify(response.errorMessage.join(", "), ToastType.error);
+      ToastNotify(response.errorMessage.join(", "), "error");
     }
   };
 
@@ -239,12 +239,12 @@ export default function SignUpPage() {
 
           <p className="text-center text-sm text-gray-500 mt-3">
             Already have an account?{" "}
-            <a
+            <Link
               href="/login"
               className="text-indigo-600 font-medium hover:underline"
             >
               Log in here
-            </a>
+            </Link>
           </p>
         </form>
       </div>
