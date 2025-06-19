@@ -25,7 +25,7 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const token = req.cookies.get("token")?.value;
-  const decoded: any = token ? await verifyJWT(token) : null;
+  const decoded = token ? await verifyJWT(token) : null;
 
   // If user is authenticated and trying to access login or signup, redirect to home
   if (
