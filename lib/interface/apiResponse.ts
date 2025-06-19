@@ -1,7 +1,7 @@
 interface apiResponse {
   statusCode: number;
   isSuccess: boolean;
-  result: object;
+  result: any;
   errorMessage: string[];
 }
 
