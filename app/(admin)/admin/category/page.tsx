@@ -1,7 +1,6 @@
 "use client";
 
 import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -77,8 +76,7 @@ export default function OptionForm() {
     register,
     handleSubmit,
     watch,
-    setError,
-    formState: { errors },
+    formState: {  },
   } = useForm<FormValues>({
     defaultValues: {
       values: [{ name: "" }],
