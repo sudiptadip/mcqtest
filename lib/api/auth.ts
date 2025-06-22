@@ -12,7 +12,7 @@ export const loginUser = async (data: {
   password: string;
 }): Promise<apiResponse> => {
   try {
-    const response = await axiosInstance.post("/api/auth/login", data);
+    const response = await axiosInstance.post("/auth/login", data);
     return response.data;
   } catch (error) {
     const err = error as AxiosError<apiResponse>;
@@ -24,7 +24,7 @@ export const registerUser = async (
   data: registerRequest
 ): Promise<apiResponse> => {
   try {
-    const response = await axiosInstance.post("/api/Auth/register", data);
+    const response = await axiosInstance.post("/Auth/register", data);
     return response.data;
   } catch (error) {
     const err = error as AxiosError<apiResponse>;
