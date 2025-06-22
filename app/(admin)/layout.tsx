@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ClientOnlyWrapper from "@/components/common/ClientOnlyWrapper";
 import { AdminSidebar } from "@/components/common/AdminSidebar";
 
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",

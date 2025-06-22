@@ -5,7 +5,7 @@ import Footer from "@/components/common/Footer";
 import "react-toastify/dist/ReactToastify.css";
 import ClientOnlyWrapper from "@/components/common/ClientOnlyWrapper";
 
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",

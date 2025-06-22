@@ -24,7 +24,7 @@ const links = [
 
 export const AdminSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const { user, loading } = useServerUser();
+  const { user } = useServerUser();
 
   return (
     <>

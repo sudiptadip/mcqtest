@@ -28,7 +28,6 @@ const schema = yup.object().shape({
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
 
   const {
     register,
