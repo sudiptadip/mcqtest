@@ -13,8 +13,8 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { registerUser } from "@/lib/api/auth";
 import ToastNotify from "@/components/commonJs/ToastNotify";
-import router from "next/router";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface FormData {
   firstName: string;
@@ -50,6 +50,7 @@ const schema = yup.object().shape({
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   const {
     register,
@@ -70,15 +71,15 @@ export default function SignUpPage() {
       phoneNumber: data.phone,
     });
 
-    if (response.isSuccess) {
-      ToastNotify("Successfully register user", "success");
+    if (response?.isSuccess) {
       await fetch("/api/auth/set-token", {
         method: "POST",
         body: JSON.stringify({ token: response.result.token }),
       });
-      router.push("/dashboard");
+      ToastNotify("Logged in successfully", "success");
+      window.location.href = "/";
     } else {
-      ToastNotify(response.errorMessage.join(", "), "error");
+      ToastNotify(response?.errorMessage.join(",") || "Login failed", "error");
     }
   };
 

@@ -27,16 +27,14 @@ export async function middleware(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
   const decoded = token ? await verifyJWT(token) : null;
 
-  // If user is authenticated and trying to access login or signup, redirect to home
   if (
     decoded &&
     (pathname.toLowerCase() === "/login" ||
-      pathname.toLowerCase() === "/register")
+      pathname.toLowerCase() === "/signup")
   ) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
-  // Allow all public paths (e.g., for unauthenticated users)
   if (
     PUBLIC_PATHS.some(
       (path) => pathname === path || pathname.startsWith(path + "/")

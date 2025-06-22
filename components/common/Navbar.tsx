@@ -5,20 +5,18 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import useServerUser from "@/lib/hooks/useServerUser";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import ToastNotify from "../commonJs/ToastNotify";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const user = useServerUser();
-  const router = useRouter();
+  const { user, loading } = useServerUser();
 
   const handleLogout = async () => {
     try {
       const res = await fetch("/api/auth/logout", { method: "POST" });
       if (res.ok) {
-        router.push("/login");
+        window.location.href = "/login";
       } else {
         ToastNotify("Logout failed", "error");
       }
@@ -35,6 +33,9 @@ export default function Navbar() {
     { name: "News", href: "/news" },
     { name: "Practice", href: "/practice" },
     { name: "Pricing", href: "/pricing" },
+    ...(user?.email === "ADMIN"
+      ? [{ name: "Admin", href: "/admin/dashboard" }]
+      : []),
   ];
 
   return (
@@ -54,45 +55,47 @@ export default function Navbar() {
             </li>
           ))}
           <li>
-            <div className="flex items-center gap-4">
-              {!user ? (
-                <>
-                  <Link href="/login">
-                    <Button
-                      variant="ghost"
-                      className="text-gray-700 hover:text-indigo-600"
-                    >
-                      Login
+            {!loading && (
+              <div className="flex items-center gap-4">
+                {!user ? (
+                  <>
+                    <Link href="/login">
+                      <Button
+                        variant="ghost"
+                        className="text-gray-700 hover:text-indigo-600"
+                      >
+                        Login
+                      </Button>
+                    </Link>
+                    <Link href="/signup">
+                      <Button className="bg-blue-600 text-white hover:bg-blue-700">
+                        Register
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <Image
+                        src={`https://ui-avatars.com/api/?name=${
+                          user?.firstName ?? "S"
+                        }+${user?.lastName ?? "B"}&format=png`}
+                        alt="User Avatar"
+                        width={32}
+                        height={32}
+                        className="rounded-full"
+                      />
+                      <span className="text-gray-700 font-medium">
+                        {user.firstName}
+                      </span>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={handleLogout}>
+                      Sign Out
                     </Button>
-                  </Link>
-                  <Link href="/signup">
-                    <Button className="bg-blue-600 text-white hover:bg-blue-700">
-                      Register
-                    </Button>
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center gap-2">
-                    <Image
-                      src={`https://ui-avatars.com/api/?name=${
-                        user?.firstName ?? "S"
-                      }+${user?.lastName ?? "B"}&format=png`}
-                      alt="User Avatar"
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
-                    <span className="text-gray-700 font-medium">
-                      {user.firstName}
-                    </span>
-                  </div>
-                  <Button variant="outline" size="sm" onClick={handleLogout}>
-                    Sign Out
-                  </Button>
-                </>
-              )}
-            </div>
+                  </>
+                )}
+              </div>
+            )}
           </li>
         </ul>
 
@@ -118,43 +121,47 @@ export default function Navbar() {
           </ul>
 
           {/* Auth Section */}
-          {!user ? (
-            <div className="flex flex-col gap-2 pt-4">
-              <Link href="/login">
-                <Button variant="outline" className="w-full">
-                  Login
-                </Button>
-              </Link>
-              <Link href="/register">
-                <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
-                  Register
-                </Button>
-              </Link>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2 pt-4">
-              <div className="flex items-center gap-3">
-                <Image
-                  src={`https://ui-avatars.com/api/?name=${
-                    user?.firstName ?? "S"
-                  }+${user?.lastName ?? "B"}&format=png`}
-                  alt="User Avatar"
-                  width={36}
-                  height={36}
-                  className="rounded-full"
-                />
-                <span className="text-gray-800 font-medium">
-                  {user.firstName}
-                </span>
-              </div>
-              <Button
-                variant="destructive"
-                className="w-full"
-                onClick={handleLogout}
-              >
-                Sign Out
-              </Button>
-            </div>
+          {!loading && (
+            <>
+              {!user ? (
+                <div className="flex flex-col gap-2 pt-4">
+                  <Link href="/login">
+                    <Button variant="outline" className="w-full">
+                      Login
+                    </Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
+                      Register
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2 pt-4">
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src={`https://ui-avatars.com/api/?name=${
+                        user?.firstName ?? "S"
+                      }+${user?.lastName ?? "B"}&format=png`}
+                      alt="User Avatar"
+                      width={36}
+                      height={36}
+                      className="rounded-full"
+                    />
+                    <span className="text-gray-800 font-medium">
+                      {user.firstName}
+                    </span>
+                  </div>
+                  <Button
+                    variant="destructive"
+                    className="w-full"
+                    onClick={handleLogout}
+                  >
+                    Sign Out
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}

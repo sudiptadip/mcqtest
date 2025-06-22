@@ -33,7 +33,7 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: yupResolver(schema),
   });
@@ -52,7 +52,7 @@ export default function LoginPage() {
         body: JSON.stringify({ token: response.result.token }),
       });
       ToastNotify("Logged in successfully", "success");
-      router.push("/");
+      window.location.href = "/"
     } else {
       ToastNotify(response?.errorMessage.join(",") || "Login failed", "error");
     }
@@ -142,8 +142,8 @@ export default function LoginPage() {
             )}
           </div>
 
-          <Button type="submit" className="w-full text-base font-semibold">
-            Log In
+          <Button type="submit" className="w-full text-base font-semibold" disabled={isSubmitting}>
+            {isSubmitting ? "Logging in..." : "Log In"}
           </Button>
 
           <p className="text-center text-sm text-gray-500 mt-3">
