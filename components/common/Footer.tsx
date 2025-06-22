@@ -1,3 +1,4 @@
+"use client";
 import { Facebook, Instagram, Linkedin, Mail, Phone, Twitter } from "lucide-react"
 import Link from "next/link"
 
@@ -60,7 +61,7 @@ export default function Footer() {
 
       {/* Bottom */}
       <div className="border-t border-gray-700 mt-10 pt-6 text-sm text-center text-gray-400">
-        © {new Date().getFullYear()} EduCrack. All rights reserved.
+        ©2025 EduCrack. All rights reserved.
       </div>
     </footer>
   )
