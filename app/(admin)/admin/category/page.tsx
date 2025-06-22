@@ -94,7 +94,7 @@ export default function OptionForm() {
 
   const onSubmit = (data: FormValues) => {
     console.log(data);
-  };
+  }; 
 
   return (
     <div className="max-w-3xl mx-auto mt-10">
