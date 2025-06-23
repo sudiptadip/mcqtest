@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
@@ -15,6 +14,8 @@ import { Plus, Trash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { SelectComp } from "@/lib/interface";
+import Select from "react-select";
 
 const validationSchema: any = Yup.object({
   optionName: Yup.string()
@@ -50,7 +51,7 @@ const validationSchema: any = Yup.object({
     otherwise: (schema) => schema.optional(),
   }),
 
-  defaultOptionList: Yup.string().when("byDefaultNotShow", {
+  defaultOptionListId: Yup.string().when("byDefaultNotShow", {
     is: true,
     then: (schema) => schema.required("Select default option list"),
     otherwise: (schema) => schema.optional(),
@@ -64,11 +65,22 @@ type FormValues = {
   values: { name: string; dependentValue?: string }[];
   byDefaultNotShow: boolean;
   defaultOptionName?: string;
-  defaultOptionList?: string;
+  defaultOptionListId?: string;
 };
 
-const mockOptions = ["Option A", "Option B", "Option C"];
-const mockDependentList = ["List A", "List B", "List C"];
+const mockOptions: SelectComp[] = ["Option A", "Option B", "Option C"].map(
+  (opt, i) => ({
+    label: opt,
+    value: i,
+  })
+);
+
+const mockDependentList: SelectComp[] = ["List A", "List B", "List C"].map(
+  (opt, i) => ({
+    label: opt,
+    value: i,
+  })
+);
 
 export default function OptionForm() {
   const {
@@ -76,7 +88,7 @@ export default function OptionForm() {
     register,
     handleSubmit,
     watch,
-    formState: {  },
+    formState: {},
   } = useForm<FormValues>({
     defaultValues: {
       values: [{ name: "" }],
@@ -94,7 +106,7 @@ export default function OptionForm() {
 
   const onSubmit = (data: FormValues) => {
     console.log(data);
-  }; 
+  };
 
   return (
     <div className="max-w-3xl mx-auto mt-10">
@@ -139,18 +151,18 @@ export default function OptionForm() {
               name="dependentOn"
               control={control}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Parent Option" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {mockOptions.map((opt) => (
-                      <SelectItem key={opt} value={opt}>
-                        {opt}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Select
+                  options={mockOptions}
+                  value={
+                    mockOptions.find(
+                      (opt) => String(opt.value) === String(field.value)
+                    ) || null
+                  }
+                  onChange={(selected: SelectComp | null) =>
+                    field.onChange(selected?.value)
+                  }
+                  placeholder="Select Parent Option"
+                />
               )}
             />
           </div>
@@ -178,20 +190,13 @@ export default function OptionForm() {
                     control={control}
                     render={({ field }) => (
                       <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <SelectTrigger className="w-40">
-                          <SelectValue placeholder="Select Value" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {mockDependentList.map((val) => (
-                            <SelectItem key={val} value={val}>
-                              {val}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                        options={mockDependentList}
+                        value={mockDependentList.find(
+                          (opt) => opt.value === field.value
+                        )}
+                        onChange={(selected) => field.onChange(selected?.value)}
+                        placeholder="Select Value"
+                      />
                     )}
                   />
                 )}
@@ -247,18 +252,12 @@ export default function OptionForm() {
                 name="defaultOptionName"
                 control={control}
                 render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Option Name" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {mockOptions.map((opt) => (
-                        <SelectItem key={opt} value={opt}>
-                          {opt}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Select
+                    options={mockOptions}
+                    value={mockOptions.find((opt) => opt.value === field.value)}
+                    onChange={(selected) => field.onChange(selected?.value)}
+                    placeholder="Select Option Name"
+                  />
                 )}
               />
             </div>
@@ -267,21 +266,17 @@ export default function OptionForm() {
                 Choose Option List
               </label>
               <Controller
-                name="defaultOptionList"
+                name="defaultOptionListId"
                 control={control}
                 render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Option List" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {mockDependentList.map((opt) => (
-                        <SelectItem key={opt} value={opt}>
-                          {opt}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Select
+                    options={mockDependentList}
+                    value={mockDependentList.find(
+                      (opt) => opt.value === field.value
+                    )}
+                    onChange={(selected) => field.onChange(selected?.value)}
+                    placeholder="Select Option List"
+                  />
                 )}
               />
             </div>
