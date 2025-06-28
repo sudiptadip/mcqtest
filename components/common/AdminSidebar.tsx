@@ -8,7 +8,7 @@ import {
   Bell,
   LogOut,
   Menu,
-  ChartBarStacked
+  ChartBarStacked,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -19,7 +19,12 @@ const links = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/users", label: "Users", icon: Users, badge: "4" },
   { href: "/admin/settings", label: "Settings", icon: Settings },
-  { href: "/admin/category", label: "Category", icon: ChartBarStacked  },
+  { href: "/admin/category", label: "Category", icon: ChartBarStacked },
+  {
+    href: "/admin/category-list",
+    label: "Category List",
+    icon: ChartBarStacked,
+  },
 ];
 
 export const AdminSidebar = () => {
@@ -62,7 +67,7 @@ export const AdminSidebar = () => {
             />
             <div>
               <div className="text-base font-semibold">{`${user?.firstName} ${user?.lastName}`}</div>
-              <div className="text-sm text-white/60">{user?.role}</div>
+              <div className="text-sm text-white/60">{user?.email}</div>
             </div>
           </div>
         )}

@@ -16,6 +16,10 @@ import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { SelectComp } from "@/lib/interface";
 import Select from "react-select";
+import apiCallPostRequest from "@/lib/api/apiCallPostRequest";
+import { useEffect, useState } from "react";
+import toastNotify from "@/components/commonJs/toastNotify";
+import rtkErrorRead from "@/components/commonJs/rtkErrorRead";
 
 const validationSchema: any = Yup.object({
   optionName: Yup.string()
@@ -58,43 +62,42 @@ const validationSchema: any = Yup.object({
   }),
 });
 
-type FormValues = {
+interface CategoryFormInterface {
+  dropdownHeadingId?: string;
   optionName: string;
   isDependent: boolean;
-  dependentOn?: string;
-  values: { name: string; dependentValue?: string }[];
+  dependentOn?: string | null;
+  values: { name: string; dependentValue?: string | null; optionId?: string }[];
   byDefaultNotShow: boolean;
   defaultOptionName?: string;
   defaultOptionListId?: string;
-};
+}
 
-const mockOptions: SelectComp[] = ["Option A", "Option B", "Option C"].map(
-  (opt, i) => ({
-    label: opt,
-    value: i,
-  })
-);
+interface OptionsInterface extends SelectComp {
+  options: SelectComp[];
+}
 
-const mockDependentList: SelectComp[] = ["List A", "List B", "List C"].map(
-  (opt, i) => ({
-    label: opt,
-    value: i,
-  })
-);
-
-export default function OptionForm() {
+export default function Category({ params }: { params: { id?: string[0] } }) {
+  const id = params.id?.[0];
   const {
     control,
     register,
     handleSubmit,
     watch,
-    formState: {},
-  } = useForm<FormValues>({
+    reset,
+    formState: { isSubmitting },
+  } = useForm<CategoryFormInterface>({
     defaultValues: {
-      values: [{ name: "" }],
+      byDefaultNotShow: false,
+      values: [{ name: "", dependentValue: null }],
+      isDependent: false,
+      dependentOn: null,
     },
-    resolver: yupResolver(validationSchema),
+    // resolver: yupResolver(validationSchema),
   });
+
+  const [mockOptions, setMockOptions] = useState<SelectComp[]>([]);
+  const [allOptions, setAllOptions] = useState<OptionsInterface[]>();
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -103,9 +106,50 @@ export default function OptionForm() {
 
   const isDependent = watch("isDependent");
   const byDefaultNotShow = watch("byDefaultNotShow");
+  const dependentOn = watch("dependentOn");
+  const defaultOptionName = watch("defaultOptionName");
 
-  const onSubmit = (data: FormValues) => {
-    console.log(data);
+  const getAllDropDownOptions = async () => {
+    const response = await apiCallPostRequest("SpDropdownCategory", 2);
+    if (response.isSuccess) {
+      setAllOptions(response.result);
+      setMockOptions(
+        response.result.map((o: SelectComp) => ({
+          label: o.label,
+          value: o.value,
+        }))
+      );
+    }
+  };
+
+  const getUpdateValueOptions = async () => {
+    const response = await apiCallPostRequest<{ DropdownHeadingId: string }>(
+      "SpDropdownCategory",
+      4,
+      { DropdownHeadingId: String(id) }
+    );
+    if (response.isSuccess) {
+      console.log(response);
+      reset(response.result[0]);
+    }
+  };
+
+  useEffect(() => {
+    getAllDropDownOptions();
+    id && getUpdateValueOptions();
+  }, []);
+
+  const onSubmit = async (data: CategoryFormInterface) => {
+    const response = await apiCallPostRequest("SpDropdownCategory", 1, {
+      ...data,
+      ...(id ? { dropdownHeadingId: id } : {}),
+    });
+    if (response.isSuccess) {
+      toastNotify(response.result);
+      reset();
+    } else {
+      rtkErrorRead(response.errorMessage);
+    }
   };
 
   return (
@@ -158,9 +202,10 @@ export default function OptionForm() {
                       (opt) => String(opt.value) === String(field.value)
                     ) || null
                   }
-                  onChange={(selected: SelectComp | null) =>
-                    field.onChange(selected?.value)
-                  }
+                  onChange={(selected: SelectComp | null) => {
+                    field.onChange(selected?.value);
+                    console.log(selected, field);
+                  }}
                   placeholder="Select Parent Option"
                 />
               )}
@@ -190,10 +235,16 @@ export default function OptionForm() {
                     control={control}
                     render={({ field }) => (
                       <Select
-                        options={mockDependentList}
-                        value={mockDependentList.find(
-                          (opt) => opt.value === field.value
-                        )}
+                        options={
+                          allOptions?.find(
+                            (x) => String(x.value) === String(dependentOn)
+                          )?.options
+                        }
+                        value={allOptions
+                          ?.find((x) => String(x.value) === String(dependentOn))
+                          ?.options?.find(
+                            (opt) => String(opt.value) === String(field.value)
+                          )}
                         onChange={(selected) => field.onChange(selected?.value)}
                         placeholder="Select Value"
                       />
@@ -254,7 +305,9 @@ export default function OptionForm() {
                 render={({ field }) => (
                   <Select
                     options={mockOptions}
-                    value={mockOptions.find((opt) => opt.value === field.value)}
+                    value={mockOptions.find(
+                      (opt) => String(opt.value) === String(field.value)
+                    )}
                     onChange={(selected) => field.onChange(selected?.value)}
                     placeholder="Select Option Name"
                   />
@@ -270,10 +323,18 @@ export default function OptionForm() {
                 control={control}
                 render={({ field }) => (
                   <Select
-                    options={mockDependentList}
-                    value={mockDependentList.find(
-                      (opt) => opt.value === field.value
-                    )}
+                    options={
+                      allOptions?.find(
+                        (x) => String(x.value) === String(defaultOptionName)
+                      )?.options
+                    }
+                    value={allOptions
+                      ?.find(
+                        (x) => String(x.value) === String(defaultOptionName)
+                      )
+                      ?.options?.find(
+                        (opt) => String(opt.value) === String(field.value)
+                      )}
                     onChange={(selected) => field.onChange(selected?.value)}
                     placeholder="Select Option List"
                   />
@@ -285,8 +346,12 @@ export default function OptionForm() {
 
         {/* Submit */}
         <div className="pt-4">
-          <Button type="submit" className="w-full text-base font-semibold">
-            Save Option
+          <Button
+            type="submit"
+            className="w-full text-base font-semibold"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Saving..." : id ? "Update Option" : "Save Option"}
           </Button>
         </div>
       </form>

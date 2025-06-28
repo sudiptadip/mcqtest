@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import useServerUser from "@/lib/hooks/useServerUser";
 import Image from "next/image";
-import ToastNotify from "../commonJs/ToastNotify";
+import ToastNotify from "../commonJs/toastNotify";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,7 +33,7 @@ export default function Navbar() {
     { name: "News", href: "/news" },
     { name: "Practice", href: "/practice" },
     { name: "Pricing", href: "/pricing" },
-    ...(user?.email === "ADMIN"
+    ...(user?.role === "ADMIN"
       ? [{ name: "Admin", href: "/admin/dashboard" }]
       : []),
   ];

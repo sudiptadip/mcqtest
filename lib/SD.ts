@@ -7,7 +7,6 @@ export const failedApiDefaultResponse: apiResponse = {
   statusCode: 400,
 };
 
-
 export enum ToastType {
   info = "info",
   success = "success",
@@ -15,3 +14,5 @@ export enum ToastType {
   error = "error",
   default = "default",
 }
+
+export type EndpointType = "SpDropdownCategory";

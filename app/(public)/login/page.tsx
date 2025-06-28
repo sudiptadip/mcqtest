@@ -12,7 +12,7 @@ import IconGoogle from "@/public/icons/IconGoogle";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import ToastNotify from "@/components/commonJs/ToastNotify";
+import ToastNotify from "@/components/commonJs/toastNotify";
 import { loginUser } from "@/lib/api/auth";
 import Link from "next/link";
 

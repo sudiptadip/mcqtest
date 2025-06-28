@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { registerUser } from "@/lib/api/auth";
-import ToastNotify from "@/components/commonJs/ToastNotify";
+import ToastNotify from "@/components/commonJs/toastNotify";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 

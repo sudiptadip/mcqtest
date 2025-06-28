@@ -1,7 +1,7 @@
 import { ToastType } from "@/lib/SD";
 import { toast, Bounce } from "react-toastify";
 
-export default function ToastNotify(
+export default function toastNotify(
   message: string,
   toastType: "success" | "info" | "warn" | "error" | "default" = ToastType.success
 ) {
