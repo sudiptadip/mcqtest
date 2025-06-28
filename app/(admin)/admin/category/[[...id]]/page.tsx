@@ -20,6 +20,7 @@ import apiCallPostRequest from "@/lib/api/apiCallPostRequest";
 import { useEffect, useState } from "react";
 import toastNotify from "@/components/commonJs/toastNotify";
 import rtkErrorRead from "@/components/commonJs/rtkErrorRead";
+import { use } from "react";
 
 const validationSchema: any = Yup.object({
   optionName: Yup.string()
@@ -77,8 +78,15 @@ interface OptionsInterface extends SelectComp {
   options: SelectComp[];
 }
 
-export default function Category({ params }: { params: { id?: string[0] } }) {
-  const id = params.id?.[0];
+export default function Category({
+  params,
+}: {
+  params: Promise<{ id?: string[] }>;
+}) {
+  
+  const { id } = use(params);
+  const dropdownHeadingId = id?.[0]
+
   const {
     control,
     register,
@@ -126,7 +134,7 @@ export default function Category({ params }: { params: { id?: string[0] } }) {
     const response = await apiCallPostRequest<{ DropdownHeadingId: string }>(
       "SpDropdownCategory",
       4,
-      { DropdownHeadingId: String(id) }
+      { DropdownHeadingId: String(dropdownHeadingId) }
     );
     if (response.isSuccess) {
       console.log(response);
@@ -136,13 +144,13 @@ export default function Category({ params }: { params: { id?: string[0] } }) {
 
   useEffect(() => {
     getAllDropDownOptions();
-    id && getUpdateValueOptions();
+    dropdownHeadingId && getUpdateValueOptions();
   }, []);
 
   const onSubmit = async (data: CategoryFormInterface) => {
     const response = await apiCallPostRequest("SpDropdownCategory", 1, {
       ...data,
-      ...(id ? { dropdownHeadingId: id } : {}),
+      ...(dropdownHeadingId ? { dropdownHeadingId } : {}),
     });
     if (response.isSuccess) {
       toastNotify(response.result);
@@ -351,7 +359,7 @@ export default function Category({ params }: { params: { id?: string[0] } }) {
             className="w-full text-base font-semibold"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Saving..." : id ? "Update Option" : "Save Option"}
+            {isSubmitting ? "Saving..." : dropdownHeadingId ? "Update Option" : "Save Option"}
           </Button>
         </div>
       </form>
