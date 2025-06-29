@@ -1,7 +1,7 @@
 import CommonDatabaseFields from "./CommonDatabaseFields";
 
 export default interface Exam extends CommonDatabaseFields {
-  Id: number;
+  Id?: number;
   Name: string;
   Slug: string;
   Description?: string | null;

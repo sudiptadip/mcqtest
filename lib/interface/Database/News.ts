@@ -1,16 +1,16 @@
 import CommonDatabaseFields from "./CommonDatabaseFields";
 
 export default interface News extends CommonDatabaseFields {
-  Id: number;
+  Id?: number;
   Title: string;
   Slug: string;
   SourceUrl?: string | null;
   Content: string;
   ShortDescription?: string | null;
-  CategoryId: number;
-  ExamId?: number | null;
+  CategoryId: string;
+  ExamId?: string | null;
   PublishDate: string;
   IsPublished: boolean;
-  DocumentImageId: number;
+  DocumentImageId: string;
   ExpiredPostDate?: string | null;
 }

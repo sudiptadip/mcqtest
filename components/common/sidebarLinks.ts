@@ -7,6 +7,7 @@ import {
   Newspaper,
   Minimize,
   BookCheck,
+  Megaphone,
 } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
@@ -47,6 +48,11 @@ export const sidebarLinks: SidebarLinkItem[] = [
         label: "News Category",
         href: "/admin/news/news-category",
         icon: Minimize,
+      },
+      {
+        label: "Organization",
+        href: "/admin/news/organization",
+        icon: Megaphone,
       },
       { label: "Exam", href: "/admin/news/exam", icon: BookCheck },
       { label: "News", href: "/admin/news", icon: Newspaper },
