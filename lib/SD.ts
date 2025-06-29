@@ -15,4 +15,10 @@ export enum ToastType {
   default = "default",
 }
 
-export type EndpointType = "SpDropdownCategory";
+export type EndpointType =
+  | "SpDropdownCategory"
+  | "sp_Exam"
+  | "sp_News"
+  | "sp_NewsCategory"
+  | "sp_Organization"
+  | "sp_Tag";

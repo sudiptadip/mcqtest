@@ -4,12 +4,6 @@ import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
 import { Plus, Trash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import * as Yup from "yup";
