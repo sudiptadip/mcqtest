@@ -5,5 +5,5 @@ export default interface Exam extends CommonDatabaseFields {
   Name: string;
   Slug: string;
   Description?: string | null;
-  OrganizationId: number;
+  OrganizationId?: number;
 }
