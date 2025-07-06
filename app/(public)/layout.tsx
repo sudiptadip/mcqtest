@@ -3,8 +3,7 @@ import { Inter } from "next/font/google";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import "react-toastify/dist/ReactToastify.css";
-import ClientOnlyWrapper from "@/components/common/ClientOnlyWrapper";
-
+// import ClientOnlyWrapper from "@/components/common/ClientOnlyWrapper";
 // const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -24,7 +23,7 @@ export default function RootLayout({
       <body>
         <Navbar />
         {children}
-        <ClientOnlyWrapper />
+        {/* <ClientOnlyWrapper /> */}
         <Footer />
       </body>
     </html>

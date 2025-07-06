@@ -1,201 +1,117 @@
-import { getNewsBySlug, getRecommendedNews } from "@/lib/api/news";
-import { notFound } from "next/navigation";
-import { Metadata } from "next";
-import { CalendarDays } from "lucide-react";
+import { getNewsBySlug, getSuggestedNews } from "@/lib/api/news";
+import { format } from "date-fns";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Calendar } from "lucide-react";
 import Image from "next/image";
-import NewsCard from "@/components/news/NewsCard";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { News } from "@/lib/interface/Database";
 
-// Replace this with your actual site URL
-const siteUrl = "https://govcrack.in";
-
-export async function generateMetadata({
-  params,
-}: {
+interface Props {
   params: { slug: string };
-}): Promise<Metadata> {
-  const news = await getNewsBySlug(params.slug);
-  const title = news?.Title || "News Details - GOVCRACK";
-  const description =
-    news?.ShortDescription?.substring(0, 160) ||
-    "Latest news and updates from GOVCRACK.";
-  const url = `${siteUrl}/news/${params.slug}`;
-  const image = news?.ImageUrl
-    ? `${siteUrl}${news.ImageUrl}`
-    : `${siteUrl}/default-image.jpg`;
-
-  return {
-    title,
-    description,
-    keywords: news?.Tags?.map((tag) => tag.Name),
-    alternates: {
-      canonical: url,
-    },
-    openGraph: {
-      title,
-      description,
-      url,
-      siteName: "GOVCRACK",
-      images: [
-        {
-          url: image,
-          width: 800,
-          height: 400,
-          alt: news?.Title,
-        },
-      ],
-      type: "article",
-      publishedTime: news?.PublishDate,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [image],
-    },
-    robots: {
-      index: true,
-      follow: true,
-    },
-  };
 }
 
-export default async function NewsDetailsPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  const news = await getNewsBySlug(params.slug);
+export default async function NewsDetailsPage({ params }: Props) {
+  const news = await getNewsBySlug(params?.slug ?? "");
+
   if (!news) return notFound();
 
-  const recommended = await getRecommendedNews(
-    (news.Tags || []).map((tag) => tag.Name),
-    Number(news.Id)
-  );
+  const suggested = await getSuggestedNews({
+    categoryId: news.Category?.[0]?.Id,
+    examId: news.Exam?.[0]?.Id,
+    excludeId: news.Id,
+    limit: 4,
+  });
 
   return (
-    <section className="py-10 px-4 md:px-16 bg-background">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-          {news.Title}
-        </h1>
+    <div className="max-w-screen-xl mx-auto px-6 py-10">
+      <div className="flex flex-col lg:flex-row gap-10">
+        {/* Main Content */}
+        <div className="lg:w-2/3 space-y-6">
+          <h1 className="text-3xl font-bold text-gray-900">{news.Title}</h1>
 
-        <div className="text-sm text-muted-foreground flex items-center gap-2">
-          <CalendarDays className="w-4 h-4" />
-          {new Date(news.PublishDate).toLocaleDateString("en-IN", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })}
-          {news.Category?.Name && <> | {news.Category.Name}</>}
-        </div>
+          <div className="flex items-center gap-3 text-sm text-gray-500">
+            <Calendar className="w-4 h-4" />
+            {format(new Date(news.PublishDate), "MMMM dd, yyyy")}
+            {news.Category?.[0]?.Name && (
+              <Badge className="bg-orange-100 text-orange-700 ml-2">
+                {news.Category[0].Name}
+              </Badge>
+            )}
+            {news.Exam?.[0]?.Name && (
+              <Badge className="bg-green-100 text-green-700 ml-2">
+                {news.Exam[0].Name}
+              </Badge>
+            )}
+          </div>
 
-        <Image
-          src={news.ImageUrl || "/default-image.jpg"}
-          alt={news.Title}
-          width={800}
-          height={400}
-          priority
-          className="rounded-lg w-full object-cover"
-        />
-
-        <article
-          className="prose max-w-none prose-blue"
-          dangerouslySetInnerHTML={{ __html: news.Content }}
-        />
-
-        {news?.Tags!?.length > 0 && (
-          <div className="pt-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-2">Tags:</h2>
-            <div className="flex flex-wrap gap-2">
-              {news.Tags!.map((tag, i) => (
-                <span
-                  key={i}
-                  className="bg-muted text-sm text-muted-foreground px-3 py-1 rounded-full"
-                >
-                  {tag.Name}
-                </span>
-              ))}
+          {news.ImageUrl && (
+            <div className="relative h-[400px] w-full rounded overflow-hidden">
+              <Image
+                src={news.ImageUrl}
+                alt={news.Title}
+                fill
+                className="object-cover"
+              />
             </div>
-          </div>
-        )}
-      </div>
+          )}
 
-      {/* ✅ Schema.org NewsArticle structured data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "NewsArticle",
-            headline: news.Title,
-            description: news.ShortDescription,
-            image: [`${siteUrl}${news.ImageUrl || "/default-image.jpg"}`],
-            author: {
-              "@type": "Organization",
-              name: "GOVCRACK",
-            },
-            publisher: {
-              "@type": "Organization",
-              name: "GOVCRACK",
-              logo: {
-                "@type": "ImageObject",
-                url: `${siteUrl}/logo.png`,
-              },
-            },
-            datePublished: news.PublishDate,
-            dateModified: news.ModifiedOn || news.PublishDate,
-            mainEntityOfPage: {
-              "@type": "WebPage",
-              "@id": `${siteUrl}/news/${news.Slug}`,
-            },
-          }),
-        }}
-      />
+          <div
+            className="prose max-w-none"
+            dangerouslySetInnerHTML={{ __html: news.Content }}
+          />
 
-      {/* ✅ Optional: Breadcrumbs schema for better SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              {
-                "@type": "ListItem",
-                position: 1,
-                name: "Home",
-                item: `${siteUrl}`,
-              },
-              {
-                "@type": "ListItem",
-                position: 2,
-                name: "News",
-                item: `${siteUrl}/news`,
-              },
-              {
-                "@type": "ListItem",
-                position: 3,
-                name: news.Title,
-                item: `${siteUrl}/news/${news.Slug}`,
-              },
-            ],
-          }),
-        }}
-      />
-
-      {/* ✅ Recommended Section */}
-      {recommended.length > 0 && (
-        <div className="max-w-7xl mx-auto mt-16 px-4 md:px-0">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            🧠 Recommended News
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {recommended.map((item) => (
-              <NewsCard key={item.Id} item={item} />
-            ))}
-          </div>
+          {news.SourceUrl && (
+            <p className="text-sm text-gray-500 mt-4">
+              Source:{" "}
+              <a
+                href={news.SourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 underline"
+              >
+                {news.SourceUrl}
+              </a>
+            </p>
+          )}
         </div>
-      )}
-    </section>
+
+        {/* Sidebar - Suggestions */}
+        <div className="lg:w-1/3 space-y-6">
+          <div className="text-xl font-bold border-b pb-2 text-blue-900">
+            Related News
+          </div>
+
+          {suggested.map((item: News) => (
+            <Card key={item.Id} className="overflow-hidden">
+              <div className="flex gap-4">
+                <div className="w-24 h-24 relative shrink-0 rounded overflow-hidden">
+                  <Link href={`/news/${item.Slug}`}>
+                    <Image
+                      src={item.ImageUrl ?? "/placeholder.png"}
+                      alt={item.Title}
+                      fill
+                      className="object-cover"
+                    />
+                  </Link>
+                </div>
+                <div className="flex-1 py-2 pr-2">
+                  <Link
+                    href={`/news/${item.Slug}`}
+                    className="font-medium text-gray-800 hover:text-blue-600 text-sm line-clamp-2"
+                  >
+                    {item.Title}
+                  </Link>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {format(new Date(item.PublishDate), "MMM dd, yyyy")}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

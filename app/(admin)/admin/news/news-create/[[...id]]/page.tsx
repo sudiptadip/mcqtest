@@ -15,15 +15,19 @@ import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
 import dynamic from "next/dynamic";
-
 import MDEditor from "@uiw/react-md-editor";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
-
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
 import { SelectComp } from "@/lib/interface";
+const UploadComp = dynamic(() => import("@/components/common/UploadComp"), {
+  ssr: false,
+});
+const SelectClient = dynamic(
+  () => import("@/components/common/SelectClientWrapper"),
+  { ssr: false }
+);
 
 export interface FormDTO {
   Title: string;
@@ -67,6 +71,8 @@ export default function NewsForm({
     control,
     formState: { errors, isSubmitting },
     reset,
+    watch,
+    setValue,
   } = useForm<FormDTO>({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -83,6 +89,12 @@ export default function NewsForm({
       ExpiredPostDate: undefined,
     },
   });
+
+  const uploadedDocId = watch("DocumentImageId");
+
+  const handleUploadSuccess = (result: { documentId: number; url: string }) => {
+    setValue("DocumentImageId", result.documentId.toString());
+  };
 
   const fetchLookups = async () => {
     const c = await apiCallPostRequest("sp_NewsCategory", 2);
@@ -171,12 +183,12 @@ export default function NewsForm({
                   name="ExamId"
                   control={control}
                   render={({ field }) => (
-                    <Select<SelectComp, false>
+                    <SelectClient
                       options={examOpts}
                       className="mt-2"
-                      getOptionLabel={(e) => e.label}
-                      getOptionValue={(e) => e.value}
-                      onChange={(opt) => field.onChange(opt?.value)}
+                      getOptionLabel={(e: any) => e.label}
+                      getOptionValue={(e: any) => e.value}
+                      onChange={(opt: any) => field.onChange(opt?.value)}
                       value={
                         examOpts.find((o) => o.value === field.value) ?? null
                       }
@@ -191,13 +203,13 @@ export default function NewsForm({
                   name="CategoryId"
                   control={control}
                   render={({ field }) => (
-                    <Select<SelectComp, false>
+                    <SelectClient
                       {...field}
                       className="mt-2"
                       options={catOpts}
-                      getOptionLabel={(e) => e.label}
-                      getOptionValue={(e) => e.value}
-                      onChange={(opt) => field.onChange(opt?.value)}
+                      getOptionLabel={(e: any) => e.label}
+                      getOptionValue={(e: any) => e.value}
+                      onChange={(opt: any) => field.onChange(opt?.value)}
                       value={
                         catOpts.find((o) => o.value === field.value) ?? null
                       }
@@ -322,11 +334,19 @@ export default function NewsForm({
 
             {/* Document Image ID */}
             <div>
-              <Label>Document Image ID</Label>
-              <Input {...register("DocumentImageId")} className="mt-2" />
+              <Label>Document Image</Label>
+              <UploadComp
+                onUploadSuccess={handleUploadSuccess}
+                title="newsImage"
+              />
               {errors.DocumentImageId && (
                 <p className="text-sm text-red-600 mt-1">
                   {errors.DocumentImageId.message}
+                </p>
+              )}
+              {uploadedDocId && (
+                <p className="text-sm text-green-600 mt-2">
+                  File uploaded. Document ID: {uploadedDocId}
                 </p>
               )}
             </div>

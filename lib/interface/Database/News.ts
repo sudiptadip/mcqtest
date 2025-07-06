@@ -17,7 +17,7 @@ export default interface News extends CommonDatabaseFields {
   DocumentImageId?: string;
   ExpiredPostDate?: string | null;
   Tags?: Tag[];
-  Category?: NewsCategory;
-  Exam?: Exam;
+  Category?: NewsCategory[];
+  Exam?: Exam[];
   ImageUrl?: string;
 }
