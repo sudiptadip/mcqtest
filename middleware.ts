@@ -7,6 +7,7 @@ const PUBLIC_PATHS = [
   "/signup",
   "/blog",
   "/api/auth/set-token",
+  "/news",
 ];
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET!);

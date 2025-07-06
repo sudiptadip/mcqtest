@@ -3,7 +3,16 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import {
+  Menu,
+  X,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Phone,
+  Mail,
+  Clock,
+} from "lucide-react";
 import useServerUser from "@/lib/hooks/useServerUser";
 import Image from "next/image";
 import ToastNotify from "../commonJs/toastNotify";
@@ -39,132 +48,172 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="w-full border-b bg-white shadow-sm">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-10">
-        <Link href={"/"} className="flex items-center space-x-2">
-          <div className="text-2xl font-bold text-blue-600">✔ Exams</div>
-        </Link>
+    <>
+      {/* 🔵 Enhanced Top Bar */}
+      <div className="bg-blue-600 text-white text-sm px-4 py-2 md:px-10">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
+          {/* Left: Social Icons */}
+          <div className="flex items-center gap-4">
+            <a href="https://facebook.com" target="_blank" rel="noreferrer" className="hover:text-gray-200">
+              <Facebook size={16} />
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noreferrer" className="hover:text-gray-200">
+              <Twitter size={16} />
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:text-gray-200">
+              <Linkedin size={16} />
+            </a>
+          </div>
 
-        {/* Desktop Navigation */}
-        <ul className="hidden items-center space-x-8 text-sm font-medium text-gray-700 md:flex">
-          {navItems.map((item) => (
-            <li key={item.href}>
-              <Link href={item.href} className="hover:text-blue-600">
-                {item.name}
-              </Link>
-            </li>
-          ))}
-          <li>
-            {!loading && (
-              <div className="flex items-center gap-4">
-                {!user ? (
-                  <>
-                    <Link href="/login">
+          {/* Right: Contact Info */}
+          <div className="flex flex-wrap items-center gap-4 text-sm">
+            <div className="flex items-center gap-1">
+              <Phone size={14} />
+              <span>+91-9876543210</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Mail size={14} />
+              <span>info@example.com</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Clock size={14} />
+              <span>Mon - Fri: 9:00 AM - 6:00 PM</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 🔒 Sticky Navbar only (not the top bar) */}
+      <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-10">
+          <Link href={"/"} className="flex items-center space-x-2">
+            <div className="text-2xl font-bold text-blue-600">✔ Exams</div>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <ul className="hidden items-center space-x-8 text-sm font-medium text-gray-700 md:flex">
+            {navItems.map((item) => (
+              <li key={item.href}>
+                <Link href={item.href} className="hover:text-blue-600">
+                  {item.name}
+                </Link>
+              </li>
+            ))}
+            <li>
+              {!loading && (
+                <div className="flex items-center gap-4">
+                  {!user ? (
+                    <>
+                      <Link href="/login">
+                        <Button
+                          variant="ghost"
+                          className="text-gray-700 hover:text-indigo-600"
+                        >
+                          Login
+                        </Button>
+                      </Link>
+                      <Link href="/signup">
+                        <Button className="bg-blue-600 text-white hover:bg-blue-700">
+                          Register
+                        </Button>
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <Image
+                          src={`https://ui-avatars.com/api/?name=${
+                            user?.firstName ?? "S"
+                          }+${user?.lastName ?? "B"}&format=png`}
+                          alt="User Avatar"
+                          width={32}
+                          height={32}
+                          className="rounded-full"
+                        />
+                        <span className="text-gray-700 font-medium">
+                          {user.firstName}
+                        </span>
+                      </div>
                       <Button
-                        variant="ghost"
-                        className="text-gray-700 hover:text-indigo-600"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleLogout}
                       >
+                        Sign Out
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
+            </li>
+          </ul>
+
+          {/* Mobile Toggle */}
+          <div className="md:hidden">
+            <button onClick={toggleMenu}>
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+        </nav>
+
+        {/* Mobile Navigation */}
+        {isOpen && (
+          <div className="md:hidden px-6 pb-4 space-y-4">
+            <ul className="space-y-4 text-sm font-medium text-gray-700">
+              {navItems.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="block hover:text-blue-600">
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            {!loading && (
+              <>
+                {!user ? (
+                  <div className="flex flex-col gap-2 pt-4">
+                    <Link href="/login">
+                      <Button variant="outline" className="w-full">
                         Login
                       </Button>
                     </Link>
-                    <Link href="/signup">
-                      <Button className="bg-blue-600 text-white hover:bg-blue-700">
+                    <Link href="/register">
+                      <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
                         Register
                       </Button>
                     </Link>
-                  </>
+                  </div>
                 ) : (
-                  <>
-                    <div className="flex items-center gap-2">
+                  <div className="flex flex-col gap-2 pt-4">
+                    <div className="flex items-center gap-3">
                       <Image
                         src={`https://ui-avatars.com/api/?name=${
                           user?.firstName ?? "S"
                         }+${user?.lastName ?? "B"}&format=png`}
                         alt="User Avatar"
-                        width={32}
-                        height={32}
+                        width={36}
+                        height={36}
                         className="rounded-full"
                       />
-                      <span className="text-gray-700 font-medium">
+                      <span className="text-gray-800 font-medium">
                         {user.firstName}
                       </span>
                     </div>
-                    <Button variant="outline" size="sm" onClick={handleLogout}>
+                    <Button
+                      variant="destructive"
+                      className="w-full"
+                      onClick={handleLogout}
+                    >
                       Sign Out
                     </Button>
-                  </>
-                )}
-              </div>
-            )}
-          </li>
-        </ul>
-
-        {/* Mobile Menu Toggle */}
-        <div className="md:hidden">
-          <button onClick={toggleMenu}>
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile Navigation */}
-      {isOpen && (
-        <div className="md:hidden px-6 pb-4 space-y-4">
-          <ul className="space-y-4 text-sm font-medium text-gray-700">
-            {navItems.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} className="block hover:text-blue-600">
-                  {item.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          {/* Auth Section */}
-          {!loading && (
-            <>
-              {!user ? (
-                <div className="flex flex-col gap-2 pt-4">
-                  <Link href="/login">
-                    <Button variant="outline" className="w-full">
-                      Login
-                    </Button>
-                  </Link>
-                  <Link href="/register">
-                    <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
-                      Register
-                    </Button>
-                  </Link>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-2 pt-4">
-                  <div className="flex items-center gap-3">
-                    <Image
-                      src={`https://ui-avatars.com/api/?name=${
-                        user?.firstName ?? "S"
-                      }+${user?.lastName ?? "B"}&format=png`}
-                      alt="User Avatar"
-                      width={36}
-                      height={36}
-                      className="rounded-full"
-                    />
-                    <span className="text-gray-800 font-medium">
-                      {user.firstName}
-                    </span>
                   </div>
-                  <Button
-                    variant="destructive"
-                    className="w-full"
-                    onClick={handleLogout}
-                  >
-                    Sign Out
-                  </Button>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      )}
-    </header>
+                )}
+              </>
+            )}
+          </div>
+        )}
+      </header>
+    </>
   );
 }

@@ -7,6 +7,7 @@ import Image from "next/image";
 import useServerUser from "@/lib/hooks/useServerUser";
 import { SidebarLinkItem, sidebarLinks } from "./sidebarLinks";
 import { SidebarLink } from "./AdminSidebarLink";
+import Link from "next/link";
 
 export const AdminSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -78,21 +79,23 @@ export const AdminSidebar = () => {
         </button>
 
         {!collapsed && (
-          <div className="flex items-center gap-3 mb-10 px-2">
-            <Image
-              src={`https://ui-avatars.com/api/?name=${
-                user?.firstName ?? "S"
-              }+${user?.lastName ?? "B"}&format=png`}
-              alt="User Avatar"
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-            <div>
-              <div className="text-base font-semibold">{`${user?.firstName} ${user?.lastName}`}</div>
-              <div className="text-sm text-white/60">{user?.email}</div>
+          <Link href="/">
+            <div className="flex items-center gap-3 mb-10 px-2">
+              <Image
+                src={`https://ui-avatars.com/api/?name=${
+                  user?.firstName ?? "S"
+                }+${user?.lastName ?? "B"}&format=png`}
+                alt="User Avatar"
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
+              <div>
+                <div className="text-base font-semibold">{`${user?.firstName} ${user?.lastName}`}</div>
+                <div className="text-sm text-white/60">{user?.email}</div>
+              </div>
             </div>
-          </div>
+          </Link>
         )}
 
         <nav className="flex-1 space-y-2 overflow-y-auto pr-1 custom-scroll">
