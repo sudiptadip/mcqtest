@@ -8,11 +8,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { News } from "@/lib/interface/Database";
 
-interface Props {
-  params: { slug: string };
-}
-
-export default async function NewsDetailsPage({ params }: Props) {
+// ✅ Fix: Use inline type for params
+export default async function NewsDetailsPage({params}: any) {
   const news = await getNewsBySlug(params?.slug ?? "");
 
   if (!news) return notFound();

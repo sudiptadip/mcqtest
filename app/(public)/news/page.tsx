@@ -6,21 +6,18 @@ import { Calendar } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Exam, News, NewsCategory } from "@/lib/interface/Database";
+import { type NextPage } from "next";
 
 export const dynamic = "force-dynamic";
 
 interface Props {
-  searchParams: {
-    category?: string;
-    exam?: string;
-    page?: string;
-  };
+  searchParams?: any;
 }
 
 export default async function NewsPage({ searchParams }: Props) {
-  const page = Number(searchParams?.page) || 1;
-  const categorySlug = searchParams?.category || "";
-  const examSlug = searchParams?.exam || "";
+  const page = Number(searchParams?.page ?? 1);
+  const categorySlug = typeof searchParams?.category === "string" ? searchParams.category : "";
+  const examSlug = typeof searchParams?.exam === "string" ? searchParams.exam : "";
 
   const { news, total, pageSize } = await getAllNews({
     page,

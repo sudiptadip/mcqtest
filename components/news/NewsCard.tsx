@@ -19,9 +19,9 @@ export default function NewsCard({ item }: { item: News }) {
           />
         </div>
 
-        {item.Category?.Name && (
+        {item.Category?.[0]?.Name && (
           <p className="text-sm font-medium text-primary mb-2">
-            {item.Category.Name}
+            {item.Category?.[0]?.Name}
           </p>
         )}
 
