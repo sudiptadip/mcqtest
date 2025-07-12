@@ -9,7 +9,6 @@ const apiCallPostRequest = async <T = any>(
   mode: number,
   body?: T
 ): Promise<apiResponse> => {
-  console.log("Hello");
   try {
     const response = await axiosInstance.post(
       `/AuthStoredProcedure/execute/${endpoint}/${mode}`,

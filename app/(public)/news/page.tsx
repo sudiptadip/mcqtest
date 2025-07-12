@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getAllNews, getCategoryAndExamList } from "@/lib/api/news";
 import { format } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,16 +9,15 @@ import Image from "next/image";
 import { Exam, News, NewsCategory } from "@/lib/interface/Database";
 import { type NextPage } from "next";
 
-export const dynamic = "force-dynamic";
-
 interface Props {
   searchParams?: any;
 }
 
 export default async function NewsPage({ searchParams }: Props) {
-  const page = Number(searchParams?.page ?? 1);
-  const categorySlug = typeof searchParams?.category === "string" ? searchParams.category : "";
-  const examSlug = typeof searchParams?.exam === "string" ? searchParams.exam : "";
+  const page = Number(  searchParams?.page ?? 1);
+  const categorySlug = typeof  searchParams?.category === "string" ?  searchParams?.category : "";
+  const examSlug = typeof  searchParams?.exam === "string" ?  searchParams?.exam : "";
+
 
   const { news, total, pageSize } = await getAllNews({
     page,

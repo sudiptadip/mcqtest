@@ -131,7 +131,6 @@ export default function Category({
       { DropdownHeadingId: String(dropdownHeadingId) }
     );
     if (response.isSuccess) {
-      console.log(response);
       reset(response.result[0]);
     }
   };
@@ -206,7 +205,6 @@ export default function Category({
                   }
                   onChange={(selected: SelectComp | null) => {
                     field.onChange(selected?.value);
-                    console.log(selected, field);
                   }}
                   placeholder="Select Parent Option"
                 />
