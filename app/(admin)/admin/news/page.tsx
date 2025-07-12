@@ -1,4 +1,5 @@
 "use client";
+
 import { TableComp } from "@/components/common/TableComp";
 import apiCallPostRequest from "@/lib/api/apiCallPostRequest";
 import { News } from "@/lib/interface/Database";

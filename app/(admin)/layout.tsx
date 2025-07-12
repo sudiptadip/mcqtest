@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+// import { Inter } from "next/font/google";
 import "react-toastify/dist/ReactToastify.css";
 import ClientOnlyWrapper from "@/components/common/ClientOnlyWrapper";
 import { AdminSidebar } from "@/components/common/AdminSidebar";
@@ -16,6 +16,7 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+
   return (
     <html
       lang="en"
