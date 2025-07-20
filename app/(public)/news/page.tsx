@@ -8,20 +8,23 @@ import Link from "next/link";
 import Image from "next/image";
 import { Exam, News, NewsCategory } from "@/lib/interface/Database";
 import { type NextPage } from "next";
+import NewsPostCard from "@/components/news/NewsPostCard";
+import { formatSqlDateTime } from "@/lib/dateUtils";
 
 interface Props {
   searchParams?: any;
 }
 
 export default async function NewsPage({ searchParams }: Props) {
-  const page = Number(  searchParams?.page ?? 1);
-  const categorySlug = typeof  searchParams?.category === "string" ?  searchParams?.category : "";
-  const examSlug = typeof  searchParams?.exam === "string" ?  searchParams?.exam : "";
-
+  const page = Number(searchParams?.page ?? 1);
+  const categorySlug =
+    typeof searchParams?.category === "string" ? searchParams?.category : "";
+  const examSlug =
+    typeof searchParams?.exam === "string" ? searchParams?.exam : "";
 
   const { news, total, pageSize } = await getAllNews({
     page,
-    categorySlug,     
+    categorySlug,
     examSlug,
   });
 
@@ -77,55 +80,64 @@ export default async function NewsPage({ searchParams }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
         {/* Main News List */}
         <div className="lg:col-span-3 space-y-8">
-          {news.map((item: News) => (
-            <Card
-              key={item.Id}
-              className="overflow-hidden shadow-sm border border-gray-200"
-            >
-              <div className="flex flex-col md:flex-row">
-                {/* Left: Content */}
-                <CardContent className="p-5 space-y-3 md:w-2/3">
-                  <div className="flex justify-between text-sm text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      {format(new Date(item.PublishDate), "MMMM dd, yyyy")}
-                    </div>
-                    <Badge className="bg-orange-100 text-orange-700">
-                      {item.Category?.[0]?.Name}
-                    </Badge>
-                  </div>
+          {news.map((item: News, i: number) => (
+            <NewsPostCard
+              category={item?.Category?.[0]?.Name ?? ""}
+              date={formatSqlDateTime(item.PublishDate, "medium")}
+              slug={item.Slug}
+              image={item.ImageUrl ?? ""}
+              description={item.ShortDescription ?? ""}
+              title={item.Title}
+              key={i}
+            />
+            // <Card
+            //   key={item.Id}
+            //   className="overflow-hidden shadow-sm border border-gray-200"
+            // >
+            //   <div className="flex flex-col md:flex-row">
+            //     {/* Left: Content */}
+            //     <CardContent className="p-5 space-y-3 md:w-2/3">
+            //       <div className="flex justify-between text-sm text-gray-500">
+            //         <div className="flex items-center gap-1">
+            //           <Calendar className="w-4 h-4" />
+            //           {format(new Date(item.PublishDate), "MMMM dd, yyyy")}
+            //         </div>
+            //         <Badge className="bg-orange-100 text-orange-700">
+            //           {item.Category?.[0]?.Name}
+            //         </Badge>
+            //       </div>
 
-                  <h2 className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors">
-                    <Link href={`/news/${item.Slug}`}>{item.Title}</Link>
-                  </h2>
+            //       <h2 className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+            //         <Link href={`/news/${item.Slug}`}>{item.Title}</Link>
+            //       </h2>
 
-                  <p className="text-sm text-gray-700 line-clamp-3">
-                    {item.ShortDescription}
-                  </p>
+            //       <p className="text-sm text-gray-700 line-clamp-3">
+            //         {item.ShortDescription}
+            //       </p>
 
-                  {item.Exam?.[0]?.Name && (
-                    <p className="text-xs text-gray-500">
-                      Related Exam:{" "}
-                      <span className="font-medium text-blue-700">
-                        {item.Exam[0].Name}
-                      </span>
-                    </p>
-                  )}
-                </CardContent>
+            //       {item.Exam?.[0]?.Name && (
+            //         <p className="text-xs text-gray-500">
+            //           Related Exam:{" "}
+            //           <span className="font-medium text-blue-700">
+            //             {item.Exam[0].Name}
+            //           </span>
+            //         </p>
+            //       )}
+            //     </CardContent>
 
-                {/* Right: Image */}
-                <div className="relative h-52 md:w-1/3 md:h-auto">
-                  <Link href={`/news/${item.Slug}`}>
-                    <Image
-                      src={item.ImageUrl ?? "/placeholder.png"}
-                      alt={item.Title}
-                      fill
-                      className="object-cover"
-                    />
-                  </Link>
-                </div>
-              </div>
-            </Card>
+            //     {/* Right: Image */}
+            //     <div className="relative h-52 md:w-1/3 md:h-auto">
+            //       <Link href={`/news/${item.Slug}`}>
+            //         <Image
+            //           src={item.ImageUrl ?? "/placeholder.png"}
+            //           alt={item.Title}
+            //           fill
+            //           className="object-cover"
+            //         />
+            //       </Link>
+            //     </div>
+            //   </div>
+            // </Card>
           ))}
 
           {/* Pagination */}
