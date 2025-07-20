@@ -16,15 +16,17 @@ interface UploadCompProps {
   uploadUrl?: string;
   onUploadSuccess: (result: UploadResult) => void;
   title: string;
+  previewUrl?: string;
 }
 
 export default function UploadComp({
   uploadUrl = process.env.NEXT_PUBLIC_API_BASE_URL + "/Document/upload",
   onUploadSuccess,
   title,
+  previewUrl = ""
 }: UploadCompProps) {
   const [isUploading, setIsUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [viewUrl, setViewUrl] = useState<string | null>(previewUrl ? String(process.env.NEXT_PUBLIC_API_IMAGEURL + previewUrl) : null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [progress, setProgress] = useState<number>(0);
   const [token, setToken] = useState<string>("");
@@ -47,7 +49,7 @@ export default function UploadComp({
 
     setSelectedFile(file);
     const localPreview = URL.createObjectURL(file);
-    setPreviewUrl(localPreview);
+    setViewUrl(localPreview);
   };
 
   const handleUpload = async () => {
@@ -83,7 +85,7 @@ export default function UploadComp({
           documentId: data.result.id,
           url: finalUrl,
         });
-        setPreviewUrl(finalUrl); // Replace preview with uploaded URL
+        setViewUrl(finalUrl); // Replace preview with uploaded URL
       }
     } catch (error) {
       console.error("Upload failed:", error);
@@ -94,7 +96,7 @@ export default function UploadComp({
   };
 
   const handleDelete = () => {
-    setPreviewUrl(null);
+    setViewUrl(null);
     setSelectedFile(null);
     setProgress(0);
   };
@@ -103,26 +105,26 @@ export default function UploadComp({
     <div className="space-y-4">
       <Label htmlFor="file-upload">Upload File</Label>
 
-      {!previewUrl && (
+      {!viewUrl && (
         <Input
           id="file-upload"
           type="file"
           onChange={handleFileChange}
-          disabled={!!previewUrl || isUploading}
+          disabled={!!viewUrl || isUploading}
         />
       )}
 
-      {previewUrl && (
+      {viewUrl && (
         <div className="relative inline-block">
-          {previewUrl.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
+          {viewUrl.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
             <img
-              src={previewUrl}
+              src={viewUrl}
               alt="Preview"
               className="max-h-48 rounded border shadow"
             />
           ) : (
             <a
-              href={previewUrl}
+              href={viewUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 underline"

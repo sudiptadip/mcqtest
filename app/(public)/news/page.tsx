@@ -21,7 +21,7 @@ export default async function NewsPage({ searchParams }: Props) {
 
   const { news, total, pageSize } = await getAllNews({
     page,
-    categorySlug,
+    categorySlug,     
     examSlug,
   });
 
