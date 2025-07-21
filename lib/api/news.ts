@@ -15,8 +15,8 @@ interface GetSuggestedNewsParams {
 
 export async function getAllNews({
   page = 1,
-  categorySlug,
-  examSlug,
+  categorySlug = "",
+  examSlug = "",
 }: GetAllNewsParams) {
   try {
     const res = await fetch(

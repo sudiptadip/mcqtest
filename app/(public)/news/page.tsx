@@ -10,6 +10,7 @@ import { Exam, News, NewsCategory } from "@/lib/interface/Database";
 import { type NextPage } from "next";
 import NewsPostCard from "@/components/news/NewsPostCard";
 import { formatSqlDateTime } from "@/lib/dateUtils";
+import NewsSideSection from "@/components/news/NewsSideSection";
 
 interface Props {
   searchParams?: any;
@@ -28,6 +29,10 @@ export default async function NewsPage({ searchParams }: Props) {
     examSlug,
   });
 
+  const { news: rNews } = await getAllNews({
+    page,
+  });
+
   const { NewsCategoryList, ExamList } = await getCategoryAndExamList();
   const totalPages = Math.ceil(total / pageSize);
 
@@ -35,7 +40,7 @@ export default async function NewsPage({ searchParams }: Props) {
     <div className="max-w-screen-xl mx-auto px-6 py-10">
       {/* FILTERS */}
       {/* FILTERS + RESET BUTTON */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b pb-4 mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b pb-4 mb-6 block lg:hidden">
         <div className="flex flex-wrap gap-2">
           {NewsCategoryList.map((cat: NewsCategory) => (
             <Link
@@ -61,7 +66,7 @@ export default async function NewsPage({ searchParams }: Props) {
         )}
       </div>
 
-      <div className="flex flex-wrap gap-2 border-b pb-4 mb-6">
+      <div className="flex flex-wrap gap-2 border-b pb-4 mb-6 block lg:hidden">
         {ExamList.map((exam: Exam) => (
           <Link
             key={exam.Slug}
@@ -77,10 +82,10 @@ export default async function NewsPage({ searchParams }: Props) {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         {/* Main News List */}
-        <div className="lg:col-span-3 space-y-8">
-          {news.map((item: News, i: number) => (
+        <div className="lg:col-span-8 space-y-8">
+          {news?.map((item: News, i: number) => (
             <NewsPostCard
               category={item?.Category?.[0]?.Name ?? ""}
               date={formatSqlDateTime(item.PublishDate, "medium")}
@@ -90,54 +95,6 @@ export default async function NewsPage({ searchParams }: Props) {
               title={item.Title}
               key={i}
             />
-            // <Card
-            //   key={item.Id}
-            //   className="overflow-hidden shadow-sm border border-gray-200"
-            // >
-            //   <div className="flex flex-col md:flex-row">
-            //     {/* Left: Content */}
-            //     <CardContent className="p-5 space-y-3 md:w-2/3">
-            //       <div className="flex justify-between text-sm text-gray-500">
-            //         <div className="flex items-center gap-1">
-            //           <Calendar className="w-4 h-4" />
-            //           {format(new Date(item.PublishDate), "MMMM dd, yyyy")}
-            //         </div>
-            //         <Badge className="bg-orange-100 text-orange-700">
-            //           {item.Category?.[0]?.Name}
-            //         </Badge>
-            //       </div>
-
-            //       <h2 className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors">
-            //         <Link href={`/news/${item.Slug}`}>{item.Title}</Link>
-            //       </h2>
-
-            //       <p className="text-sm text-gray-700 line-clamp-3">
-            //         {item.ShortDescription}
-            //       </p>
-
-            //       {item.Exam?.[0]?.Name && (
-            //         <p className="text-xs text-gray-500">
-            //           Related Exam:{" "}
-            //           <span className="font-medium text-blue-700">
-            //             {item.Exam[0].Name}
-            //           </span>
-            //         </p>
-            //       )}
-            //     </CardContent>
-
-            //     {/* Right: Image */}
-            //     <div className="relative h-52 md:w-1/3 md:h-auto">
-            //       <Link href={`/news/${item.Slug}`}>
-            //         <Image
-            //           src={item.ImageUrl ?? "/placeholder.png"}
-            //           alt={item.Title}
-            //           fill
-            //           className="object-cover"
-            //         />
-            //       </Link>
-            //     </div>
-            //   </div>
-            // </Card>
           ))}
 
           {/* Pagination */}
@@ -168,39 +125,16 @@ export default async function NewsPage({ searchParams }: Props) {
           )}
         </div>
 
-        {/* Sidebar (optional) */}
-        <div className="hidden lg:block space-y-6">
-          <div className="text-xl font-bold border-b pb-2 text-blue-900">
-            OPINION
-          </div>
-
-          {news.slice(-5).map((item: News) => (
-            <div key={item.Id} className="flex items-start gap-3">
-              <div className="flex-1">
-                <Link
-                  href={`/news/${item.Slug}`}
-                  className="text-sm font-medium text-gray-800 hover:text-blue-600 line-clamp-2"
-                >
-                  {item.Title}
-                </Link>
-                <p className="text-xs text-gray-500">
-                  {format(new Date(item.PublishDate), "MMM dd, yyyy")}
-                </p>
-              </div>
-
-              <div className="w-16 h-16 relative shrink-0 rounded overflow-hidden">
-                <Link href={`/news/${item.Slug}`}>
-                  <Image
-                    src={item.ImageUrl ?? "/placeholder.png"}
-                    alt={item.Title}
-                    fill
-                    className="object-cover"
-                  />
-                </Link>
-              </div>
-            </div>
-          ))}
+        <div className="hidden lg:block lg:col-span-4">
+          <NewsSideSection
+            rNews={rNews}
+            NewsCategoryList={NewsCategoryList}
+            ExamList={ExamList}
+            categorySlug={categorySlug}
+            examSlug={examSlug}
+          />
         </div>
+        
       </div>
     </div>
   );
